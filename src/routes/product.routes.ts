@@ -1,10 +1,21 @@
-import { Router, Request, Response } from 'express';
+import { Router } from 'express';
+import { ProductController } from '../controllers/product.controller';
+import { authMiddleware } from '../middleware/auth.middleware';
 
 const router = Router();
 
-// Placeholder routes - to be implemented
-router.get('/', (_req: Request, res: Response) => {
-  res.json({ message: 'Product routes - to be implemented' });
-});
+// Public routes
+router.get('/', ProductController.getProducts);
+router.get('/categories', ProductController.getCategories);
+router.get('/brands', ProductController.getBrands);
+router.get('/:id', ProductController.getProduct);
+
+// Protected routes (require authentication)
+router.post('/:productId/reviews', authMiddleware, ProductController.addReview);
+
+// Admin routes (require admin role)
+router.post('/', authMiddleware, ProductController.createProduct);
+router.put('/:id', authMiddleware, ProductController.updateProduct);
+router.delete('/:id', authMiddleware, ProductController.deleteProduct);
 
 export default router;
